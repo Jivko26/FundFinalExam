@@ -1,0 +1,53 @@
+using System;
+
+namespace WorldTour
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string destinations = Console.ReadLine();
+
+            string[] commands = Console.ReadLine().Split(":");
+
+            while (commands[0] != "Travel")
+            {
+                if (commands[0] == "Add Stop")
+                {
+                    int index = int.Parse(commands[1]);
+                    string stop = commands[2];
+                    if (index >= 0 && index <= destinations.Length - 1)
+                    {
+                        destinations = destinations.Insert(index, stop);
+                    }
+                    Console.WriteLine(destinations);
+                }
+                if (commands[0] == "Remove Stop")
+                {
+                    int indexOne = int.Parse(commands[1]);
+                    int indexTwo = int.Parse(commands[2]);
+
+                    if (indexOne >= 0 && indexOne <= destinations.Length - 1 && indexTwo >= 0 && indexTwo <= destinations.Length - 1)
+                    {
+                        destinations = destinations.Remove(indexOne, indexTwo - indexOne + 1);
+                    }
+                    Console.WriteLine(destinations);
+                }
+                if (commands[0] == "Switch")
+                {
+                    string oldString = commands[1];
+                    string newString = commands[2];
+
+                    if (destinations.Contains(oldString))
+                    {
+                        destinations = destinations.Replace(oldString, newString);
+                    }
+                    Console.WriteLine(destinations);
+                }
+                commands = Console.ReadLine().Split(":");
+            }
+
+            Console.WriteLine($"Ready for world tour! Planned stops: {destinations}");
+        }
+    }
+}
