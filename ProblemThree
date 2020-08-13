@@ -1,0 +1,98 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+
+namespace PlantDiscovery
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int n = int.Parse(Console.ReadLine());
+            var plants = new Dictionary<string, Plant>();
+            for (int i = 0; i < n; i++)
+            {
+                string[] information = Console.ReadLine().Split("<->");
+                string plant = information[0];
+                int rarity = int.Parse(information[1]);
+                if (!plants.ContainsKey(plant))
+                {
+                    plants.Add(plant, new Plant());
+                    plants[plant].Rarity = rarity;
+                }
+                else
+                {
+                    plants[plant].Rarity = rarity;
+                }
+
+            }
+            string[] commands = Console.ReadLine().Split(new char[] { ':', ' ', '-' }, StringSplitOptions.RemoveEmptyEntries);
+            while (commands[0] != "Exhibition")
+            {
+                switch (commands[0])
+                {
+                    case "Rate":
+                        string plant = commands[1];
+                        double rating = double.Parse(commands[2]);
+                        if (plants.ContainsKey(commands[1]))
+                        {
+                            plants[plant].Ratings.Add(rating);
+                        }
+                        else
+                        {
+                            Console.WriteLine("error");
+                        }
+                        break;
+                    case "Update":
+                        int newRarity = int.Parse(commands[2]);
+                        if (plants.ContainsKey(commands[1]))
+                        {
+                            plants[commands[1]].Rarity = newRarity;
+                        }
+                        else
+                        {
+                            Console.WriteLine("error");
+                        }
+                        
+                        break;
+                    case "Reset":
+                        if (plants.ContainsKey(commands[1]))
+                        {
+                            plants[commands[1]].Ratings.Clear();
+                        }
+                        else
+                        {
+                            Console.WriteLine("error");
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("error");
+                        break;
+                }
+                commands = Console.ReadLine().Split(new char[] { ':', ' ', '-' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+            double average = 0;
+            foreach (var item in plants)
+            {
+                if (item.Value.Ratings.Count == 0)
+                {
+                    item.Value.Ratings.Add(0);
+                }
+            }
+            var sortedPlants = plants.OrderByDescending(plant => plant.Value.Rarity).ThenByDescending(plant => plant.Value.Ratings.Average()).ToDictionary(item => item.Key, item => item.Value);
+            Console.WriteLine("Plants for the exhibition:");
+            foreach (var item in sortedPlants)
+            {
+                average = item.Value.Ratings.Average();
+                Console.WriteLine($"- {item.Key}; Rarity: {item.Value.Rarity}; Rating: {average:f2}");
+            }
+        }
+
+        public class Plant
+        {
+            public int Rarity { get; set; }
+            public ICollection<double> Ratings = new List<double>();
+        }
+    }
+}
